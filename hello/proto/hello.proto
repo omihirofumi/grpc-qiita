@@ -1,0 +1,33 @@
+// バージョン
+syntax = "proto3";
+
+// Goのパッケージ名として使われる。
+// 別Protoファイルで同じmessageが使用されていた場合に衝突を回避できる。
+package hello;
+
+// Goのインポートパス
+option go_package = "github.com/omihirofumi/grpc-go/hello/proto";
+
+// リクエストを宣言（Goのstructのようなもの)
+message HelloRequest {
+  // 型　フィールド名 = タグ;
+  string first_name = 1;
+}
+
+// レスポンスを宣言（Goのstructのようなもの)
+message HelloResponse {
+  string result = 1;
+}
+
+// サービスを宣言
+// ここに宣言されたRPCをクライアントから呼び出す
+service HelloService {
+  // リクエストを渡して、レスポンスを返す
+  rpc Hello (HelloRequest) returns (HelloResponse);
+  // レスポンスにstreamを付けることでSVは複数レスポンスを返せる
+  rpc HelloAmp (HelloRequest) returns (stream HelloResponse);
+  // リクエストにstreamを付けることでクライアントは複数リクエストを渡せる
+  rpc HelloManyTimes (stream HelloRequest) returns (HelloResponse);
+  // リクエスト、レスポンスにstreamを付けることで双方向でストリーミングできる
+  rpc HelloEveryone (stream HelloRequest) returns (stream HelloResponse);
+}
